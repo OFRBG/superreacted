@@ -140,7 +140,7 @@ export default function Run({
           </h2>
           <Button
             variant="yellow"
-            onClick={() => setInputs((i) => [...i, n(15)])}
+            onClick={() => setInputs((i) => [...i, Math.floor(n(15))])}
           >
             +
           </Button>
