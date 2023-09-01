@@ -43,7 +43,7 @@ export default [
       ...ts.configs["eslint-recommended"].rules,
       ...ts.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
-      //...tailwindcss.configs.recommended.rules,
+      ...tailwindcss.configs.recommended.rules,
       ...storybook.configs.recommended.rules,
       ...prettier.configs.recommended.rules,
     },

@@ -9,6 +9,10 @@ import React, {
   useState,
 } from "react";
 import { n } from "../n";
+import { Block } from "../components/Block";
+import { Button } from "../components/Button";
+import { Layout } from "../components/Layout";
+import { BlockLine } from "../components/BlockLine";
 
 const RunContext = createContext<{
   setMax: Dispatch<SetStateAction<number>>;
@@ -36,37 +40,6 @@ type LISProps = {
   backtrack?: boolean;
 };
 
-type BlockProps = {
-  cached?: boolean;
-  removed?: boolean;
-  empty?: boolean;
-  dim?: boolean;
-};
-
-const Block = ({ cached, removed, empty, dim }: BlockProps) => {
-  return (
-    <div
-      className={`h-1 flex-1 rounded-sm font-mono text-xs group-hover:h-2 ${
-        empty
-          ? `invisible ${
-              removed ? "bg-rose-700" : "bg-blue-700"
-            } group-hover:visible group-hover:opacity-20`
-          : `visible ${
-              dim
-                ? "opacity-30 group-hover:opacity-40 "
-                : "opacity-100 group-hover:opacity-90 group-hover:bg-green-600"
-            } ${
-              removed
-                ? "bg-indigo-700"
-                : cached
-                ? "bg-fuchsia-600"
-                : "bg-blue-600"
-            }`
-      }`}
-    ></div>
-  );
-};
-
 const Result = ({ a, i, children }: Omit<LISProps, "l">) => {
   const { setMax, max, inputs } = useRunContext();
 
@@ -75,30 +48,14 @@ const Result = ({ a, i, children }: Omit<LISProps, "l">) => {
   });
 
   return (
-    <div className="group flex h-1 w-full items-center gap-1 py-1">
-      <div
-        className={`flex w-2 justify-end font-mono text-xs opacity-[${
-          a / max
-        }]`}
-      >
-        <div
-          className={`rounded-full ${
-            a === max ? "bg-lime-500" : "bg-indigo-500"
-          } h-1 w-1 group-hover:h-2 group-hover:w-2 group-hover:rounded-sm`}
-        />
-      </div>
-      <div className="flex h-1 flex-1 items-center justify-center gap-[2px]">
-        {children}
-        {i
-          ? Array(inputs.length - i)
-              .fill(true)
-              .map(() => <Block empty />)
-          : null}
-      </div>
-      <div className="invisible w-0 font-mono text-xs group-hover:visible">
-        {Number(a)}
-      </div>
-    </div>
+    <BlockLine highlight={a === max} note={a}>
+      {children}
+      {i
+        ? Array(inputs.length - i)
+            .fill(true)
+            .map(() => <Block empty />)
+        : null}
+    </BlockLine>
   );
 };
 
@@ -183,64 +140,46 @@ export default function Run({
   }, [inputs]);
 
   return (
-    <div className="flex h-screen select-none flex-col items-center justify-start gap-1 overflow-scroll p-4">
-      <div>
-        <h1 className="inline pb-2  align-middle font-mono text-xl text-blue-100">
-          LIS
-        </h1>
-        <button
-          className="ml-2 inline h-4 w-4 rounded-sm bg-lime-500 align-middle text-xs text-slate-900"
-          onClick={() => setInputs(initState)}
+    <Layout
+      title="LIS O(n^2)"
+      onReset={() => setInputs(initState)}
+      controls={
+        <>
+          <Button
+            variant="blue"
+            onClick={() => setInputs((i) => i.slice(0, -1))}
+          >
+            -
+          </Button>
+          <h2 className="pointer-events-none w-6 text-center font-mono text-lg text-blue-200">
+            {inputs.length}
+          </h2>
+          <Button
+            variant="yellow"
+            onClick={() => setInputs((i) => [...i, Math.floor(n(15))])}
+          >
+            +
+          </Button>
+          <h2 className="pointer-events-none sticky top-0 z-10 w-12 text-center font-mono text-lg text-blue-200">
+            → {max}
+          </h2>
+        </>
+      }
+      headers={inputs.map((p, index) => (
+        <div
+          key={index}
+          className={`w-[2ch] flex-1 rounded-sm bg-slate-900 text-center font-mono text-xs ${
+            p < 0 ? "text-rose-600" : ""
+          }`}
         >
-          ♺
-        </button>
-      </div>
-      <div className="sticky top-0 z-10 flex items-center gap-2 bg-slate-900 px-2">
-        <button
-          className="h-4 w-4 rounded-sm bg-blue-500 text-xs font-bold text-slate-900"
-          onClick={() => setInputs((i) => i.slice(0, -1))}
-        >
-          -
-        </button>
-        <h2 className="pointer-events-none w-6 text-center font-mono text-lg text-blue-200">
-          {inputs.length}
-        </h2>
-        <button
-          className="h-4 w-4 rounded-sm bg-yellow-500 text-xs font-bold text-slate-900"
-          onClick={() => setInputs((i) => [...i, n(15)])}
-        >
-          +
-        </button>
-        <h2 className="pointer-events-none sticky top-0 z-10 w-12 text-center font-mono text-lg text-blue-200">
-          → {max}
-        </h2>
-      </div>
-
-      <div className="sticky top-8 z-10 flex w-full max-w-xs flex-wrap justify-start text-blue-300">
-        <div className="flex w-full flex-wrap rounded-sm border-blue-900">
-          <div className="flex w-full gap-[2px] pl-3 pr-1">
-            {inputs.map((p, index) => (
-              <div
-                key={index}
-                className={`w-[2ch] flex-1 rounded-sm bg-slate-900 text-center font-mono text-xs ${
-                  p < 0 ? "text-rose-600" : ""
-                }`}
-              >
-                {Math.abs(p)}
-                <Block />
-              </div>
-            ))}
-          </div>
+          {Math.abs(p)}
+          <Block />
         </div>
-      </div>
-
-      <div className="flex w-full max-w-xs flex-wrap justify-start text-blue-300">
-        <div className="flex w-full flex-wrap rounded-sm border-blue-900">
-          <RunContext.Provider value={{ setMax, max, inputs }}>
-            <LIS a={0} i={0} l={[]} />
-          </RunContext.Provider>
-        </div>
-      </div>
-    </div>
+      ))}
+    >
+      <RunContext.Provider value={{ setMax, max, inputs }}>
+        <LIS a={0} i={0} l={[]} />
+      </RunContext.Provider>
+    </Layout>
   );
 }

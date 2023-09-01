@@ -1,5 +1,4 @@
 import {
-  Children,
   Dispatch,
   ReactNode,
   SetStateAction,
@@ -9,8 +8,7 @@ import {
   useLayoutEffect,
   useState,
 } from "react";
-import { n } from "../n";
-import { Block as SystemBlock } from "../components/Block";
+import { Block } from "../components/Block";
 import { Layout } from "../components/Layout";
 import { Button } from "../components/Button";
 import { BlockLine } from "../components/BlockLine";
@@ -31,23 +29,7 @@ const useRunContext = () => {
   return context;
 };
 
-const className = {
-  colors: [
-    "bg-red-500",
-    "bg-pink-500",
-    "bg-indigo-500",
-    "bg-blue-500",
-    "bg-teal-500",
-    "bg-green-500",
-    "bg-lime-500",
-  ],
-};
-
-type BlockProps = {
-  empty?: boolean;
-  step?: number;
-  dim?: boolean;
-};
+const solved = new Set();
 
 type MaximumSubArrayProps = {
   step?: number;
@@ -57,13 +39,7 @@ type MaximumSubArrayProps = {
   children?: ReactNode;
 };
 
-const Block = ({ step = 0, ...props }: BlockProps) => {
-  const color = className.colors[Math.max(Math.min(step + 3, 6), 0)];
-
-  return <SystemBlock {...props} className={props.empty ? "" : color} />;
-};
-
-const Result = ({ i, j, a, children }: Omit<MaximumSubArrayProps, "step">) => {
+const Result = ({ i, j, a, children }: MaximumSubArrayProps) => {
   const { setMax, max, inputs } = useRunContext();
 
   useEffect(() => {
@@ -71,29 +47,37 @@ const Result = ({ i, j, a, children }: Omit<MaximumSubArrayProps, "step">) => {
   });
 
   return (
-    <BlockLine highlight={a === max} note={Number(a).toFixed()}>
+    <BlockLine highlight={a === max} note={Number(a).toFixed(2)}>
       {i
         ? Array(i - 1)
-            .fill(true)
-            .map(() => <SystemBlock empty />)
+            .fill(-1)
+            .map(() => <Block />)
         : null}
       {children}
-      {j
-        ? Array(inputs.length - j)
-            .fill(true)
-            .map(() => <SystemBlock empty />)
-        : null}
+      {Array(inputs.length - j)
+        .fill(-1)
+        .map(() => (
+          <Block empty />
+        ))}
     </BlockLine>
   );
 };
 
-const MaximumSubArray = ({
-  step = 0,
+const CacheMark = ({
   i,
   j,
-  a,
   children,
-}: MaximumSubArrayProps) => {
+}: {
+  i: number;
+  j: number;
+  children: ReactNode;
+}) => {
+  solved.add(`${i}-${j}`);
+
+  return <>{children}</>;
+};
+
+const MaximumSubArray = ({ i, j, a, children }: MaximumSubArrayProps) => {
   const { inputs } = useRunContext();
 
   if (j === inputs.length) {
@@ -104,41 +88,24 @@ const MaximumSubArray = ({
     );
   }
 
+  const next = j + 1;
+  const item = inputs[j];
+
   return (
-    <>
+    <CacheMark i={i} j={j}>
       <Result i={i} j={j} a={a}>
         {children}
       </Result>
-      {a > 0 ? (
-        <MaximumSubArray
-          i={i}
-          j={j + 1}
-          a={a + inputs[j]}
-          step={inputs[j] > 0 ? step + 1 : step - 1}
-        >
-          {Children.count(children) > 1 ? (
-            <>
-              {Children.toArray(children).slice(0, -1)}
-              <Block step={step} dim />
-            </>
-          ) : (
-            children
-          )}
-          <Block step={inputs[j] > 0 ? step + 1 : step - 1} />
-        </MaximumSubArray>
-      ) : (
-        <MaximumSubArray i={j + 1} j={j + 1} a={inputs[j]} step={0}>
-          <Block step={0} />
-        </MaximumSubArray>
-      )}
-    </>
+      <MaximumSubArray i={next} j={next} a={item}>
+        <Block cached={solved.has(`${j}-${inputs.length - 1}`)} />
+      </MaximumSubArray>
+      <MaximumSubArray i={i} j={next} a={a + item}>
+        {children}
+        <Block cached={solved.has(`${j}-${inputs.length - 1}`)} />
+      </MaximumSubArray>
+    </CacheMark>
   );
 };
-
-const initState = (base: number[] = []) =>
-  Array(base.length || 14)
-    .fill(-1)
-    .map(() => Math.floor(n(6, 6)));
 
 const MIN = -1000;
 
@@ -157,13 +124,16 @@ export default function Run({
   const [inputs, setInputs] = useState(defaultValues.inputs);
 
   useLayoutEffect(() => {
+    solved.clear();
+  });
+
+  useLayoutEffect(() => {
     setMax(MIN);
   }, [inputs]);
 
   return (
     <Layout
-      title="Maximum Subarray O(n)"
-      onReset={() => setInputs(initState)}
+      title="Maximum Subarray O(2^n)"
       controls={
         <>
           <Button
@@ -175,10 +145,7 @@ export default function Run({
           <h2 className="pointer-events-none w-6 text-center font-mono text-lg text-blue-200">
             {inputs.length}
           </h2>
-          <Button
-            variant="yellow"
-            onClick={() => setInputs((i) => [...i, Math.floor(n(0, 10))])}
-          >
+          <Button variant="yellow" onClick={() => setInputs((i) => [...i, 1])}>
             +
           </Button>
           <h2 className="pointer-events-none sticky top-0 z-10 flex-1 text-center font-mono text-lg text-blue-200">
@@ -193,7 +160,7 @@ export default function Run({
         <div key={index} className="flex-1 text-center font-mono text-xs">
           <input
             className={`w-full rounded-sm bg-transparent text-center ${
-              p < 0 ? "text-red-500" : ""
+              p < 0 ? "text-red-600" : ""
             }`}
             step="1"
             type="number"
@@ -206,7 +173,7 @@ export default function Run({
               );
             }}
           />
-          <SystemBlock />
+          <Block />
         </div>
       ))}
     >

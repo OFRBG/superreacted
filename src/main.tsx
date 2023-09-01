@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import Run from "./algorithms/maximum-subarray";
+import Run from "./algorithms/lis-2n";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

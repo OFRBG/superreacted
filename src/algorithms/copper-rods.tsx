@@ -9,6 +9,10 @@ import {
   useState,
 } from "react";
 import { n } from "../n";
+import { Block } from "../components/Block";
+import { Button } from "../components/Button";
+import { Layout } from "../components/Layout";
+import { BlockLine } from "../components/BlockLine";
 
 const RunContext = createContext<{
   setMax: Dispatch<SetStateAction<number>>;
@@ -34,17 +38,6 @@ type MaxProfitProps = {
   children?: ReactNode;
 };
 
-type BlockProps = number;
-
-const Block = ({ w, cached }: { w: BlockProps; cached?: boolean }) => (
-  <div
-    style={{ flex: w + 1 }}
-    className={`h-1 rounded-sm font-mono text-xs group-hover:h-2 group-hover:bg-blue-500 group-hover:opacity-100 ${
-      cached ? "bg-emerald-700" : "bg-blue-600"
-    }`}
-  ></div>
-);
-
 const Result = ({ a, children }: Omit<MaxProfitProps, "w">) => {
   const { max, setMax } = useRunContext();
 
@@ -53,21 +46,9 @@ const Result = ({ a, children }: Omit<MaxProfitProps, "w">) => {
   });
 
   return (
-    <div className="group flex h-1 w-full items-center gap-1 py-1">
-      <div className={`flex w-2 justify-end font-mono text-xs`}>
-        <div
-          className={`rounded-full ${
-            a === max ? "bg-lime-500" : "bg-indigo-500"
-          } h-1 w-1 group-hover:h-2 group-hover:w-2 group-hover:rounded-sm`}
-        />
-      </div>
-      <div className="flex h-1 flex-1 items-center justify-center gap-[2px]">
-        {children}
-      </div>
-      <div className="invisible w-0 font-mono text-xs group-hover:visible">
-        {Number(a).toFixed(2)}
-      </div>
-    </div>
+    <BlockLine highlight={a === max} note={Number(a).toFixed()}>
+      {children}
+    </BlockLine>
   );
 };
 
@@ -96,7 +77,7 @@ const MaxProfit = ({ a, w, children }: MaxProfitProps) => {
             a={a + price}
           >
             {children}
-            <Block w={i} cached={solved.has(w)} />
+            <Block style={{ flex: i + 1 }} cached={solved.has(w)} />
           </MaxProfit>
         ),
       )}
@@ -134,49 +115,34 @@ export default function Run({
   }, [w, inputs]);
 
   return (
-    <div className="flex h-screen select-none flex-col items-center justify-start gap-1 overflow-scroll p-4">
-      <div>
-        <h1 className="pb-2 inline align-middle font-mono text-xl text-blue-100">
-          Copper Rods
-        </h1>
-        <button
-          className="ml-2 inline h-4 w-4 rounded-sm bg-lime-500 align-middle text-xs text-slate-900"
-          onClick={() => setInputs(initState)}
-        >
-          ♺
-        </button>
-      </div>
-
-      <div className="sticky top-0 z-10 flex items-center gap-2 bg-slate-900 px-2">
-        <button
-          className="h-4 w-4 rounded-sm bg-blue-500 text-xs font-bold text-slate-900"
-          onClick={() => setW((w) => w - 1)}
-        >
-          -
-        </button>
-        <h2 className="pointer-events-none w-6 text-center font-mono text-lg text-blue-200">
-          {w}
-        </h2>
-        <button
-          className="h-4 w-4 rounded-sm bg-yellow-500 text-xs font-bold text-slate-900"
-          onClick={() => setW((w) => w + 1)}
-        >
-          +
-        </button>
-        <h2 className="pointer-events-none sticky top-0 z-10 w-20 text-center font-mono text-lg text-blue-200">
-          →{" "}
-          <span data-testid="result" className="contents">
-            {max.toFixed(2)}
-          </span>
-        </h2>
-      </div>
-
-      <div className="flex max-w-xs flex-wrap justify-start text-blue-300">
-        <div className="flex w-full relative flex-wrap rounded-sm border-blue-900 p-1">
+    <Layout
+      title="Copper Rods"
+      onReset={() => setInputs(initState)}
+      controls={
+        <>
+          <Button variant="blue" onClick={() => setW((w) => w - 1)}>
+            -
+          </Button>
+          <h2 className="pointer-events-none w-6 text-center font-mono text-lg text-blue-200">
+            {w}
+          </h2>
+          <Button variant="yellow" onClick={() => setW((w) => w + 1)}>
+            +
+          </Button>
+          <h2 className="pointer-events-none sticky top-0 z-10 w-20 text-center font-mono text-lg text-blue-200">
+            →{" "}
+            <span data-testid="result" className="contents">
+              {max.toFixed(2)}
+            </span>
+          </h2>
+        </>
+      }
+      headers={
+        <div className="flex max-w-xs flex-wrap text-blue-300">
           {inputs.map((p, index) => (
             <div
               key={index}
-              className={`group flex w-full items-center font-mono text-xs h-4 ${
+              className={`group flex h-4 w-full items-center font-mono text-xs ${
                 index + 1 > w ? "hidden" : ""
               }`}
             >
@@ -187,15 +153,16 @@ export default function Run({
                 }}
                 className={`h-1`}
               >
-                <Block w={index} />
+                <Block />
               </div>
             </div>
           ))}
         </div>
-        <RunContext.Provider value={{ setMax, max, inputs }}>
-          <MaxProfit a={0} w={w} />
-        </RunContext.Provider>
-      </div>
-    </div>
+      }
+    >
+      <RunContext.Provider value={{ setMax, max, inputs }}>
+        <MaxProfit a={0} w={w} />
+      </RunContext.Provider>
+    </Layout>
   );
 }
