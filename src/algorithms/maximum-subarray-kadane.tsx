@@ -116,14 +116,10 @@ const MaximumSubArray = ({
           a={a + inputs[j]}
           step={inputs[j] > 0 ? step + 1 : step - 1}
         >
-          {Children.count(children) > 1 ? (
-            <>
-              {Children.toArray(children).slice(0, -1)}
-              <Block step={step} dim />
-            </>
-          ) : (
-            children
-          )}
+          {Children.count(children) > 1 &&
+            Children.toArray(children).slice(0, -1)}
+          {Children.count(children) > 1 && <Block step={step} dim />}
+          {Children.count(children) <= 1 && children}
           <Block step={inputs[j] > 0 ? step + 1 : step - 1} />
         </MaximumSubArray>
       ) : (
@@ -150,7 +146,7 @@ type RunProps<T> = {
   defaultValues?: T;
 };
 
-export default function Run({
+export default function MaximumSubarrayN({
   defaultValues = { inputs: [-2, 1, -3, 4, 5, 7] },
 }: RunProps<DefaultValues>) {
   const [max, setMax] = useState(MIN);
@@ -165,29 +161,25 @@ export default function Run({
       title="Maximum Subarray O(n)"
       onReset={() => setInputs(initState)}
       controls={
-        <>
+        <span className="contents text-center font-mono text-lg text-blue-200">
           <Button
             variant="blue"
             onClick={() => setInputs((i) => i.slice(0, -1))}
           >
             -
           </Button>
-          <h2 className="pointer-events-none w-6 text-center font-mono text-lg text-blue-200">
-            {inputs.length}
-          </h2>
+          <h2 className="pointer-events-none w-6">{inputs.length}</h2>
           <Button
             variant="yellow"
             onClick={() => setInputs((i) => [...i, Math.floor(n(0, 10))])}
           >
             +
           </Button>
-          <h2 className="pointer-events-none sticky top-0 z-10 flex-1 text-center font-mono text-lg text-blue-200">
-            →
-          </h2>
-          <h2 className="pointer-events-none sticky top-0 z-10 flex-1 text-center font-mono text-lg text-blue-200">
+          <h2 className="pointer-events-none flex-1">→</h2>
+          <h2 className="pointer-events-none flex-1">
             {max === MIN ? "..." : max}
           </h2>
-        </>
+        </span>
       }
       headers={inputs.map((p, index) => (
         <div key={index} className="flex-1 text-center font-mono text-xs">

@@ -6,20 +6,21 @@ type Props = {
   onClick: () => void;
   children: ReactNode;
   variant?: Variant;
+  className?: string;
 };
 
-const className: Record<Variant, string> = {
+const classNames: Record<Variant, string> = {
   blue: "bg-blue-500",
   yellow: "bg-yellow-500",
   lime: "bg-lime-500",
 };
 
-export const Button = ({ onClick, variant, children }: Props) => {
+export const Button = ({ onClick, variant, children, className }: Props) => {
   return (
     <button
       className={`h-4 w-4 rounded-sm text-xs font-bold text-slate-900 ${
-        variant ? className[variant] : ""
-      }`}
+        variant ? classNames[variant] : ""
+      } ${className}`}
       onClick={onClick}
     >
       {children}

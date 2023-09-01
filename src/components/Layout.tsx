@@ -18,24 +18,22 @@ export const Layout = ({
 }: Props) => {
   return (
     <div className="flex h-screen select-none flex-col items-center justify-start gap-1 overflow-scroll p-4">
-      <h1 className="pb-2 font-mono text-xl text-blue-100">
-        <div>
-          <h1 className="inline pb-2 align-middle font-mono text-xl text-blue-100">
-            {title}
-          </h1>
+      <h1 className="sticky top-0 z-10 font-mono text-xl text-blue-200">
+        <div className="rounded-sm bg-slate-900 px-1">
+          <h1 className="inline align-middle">{title}</h1>
           {onReset && (
-            <span className="ml-2">
-              <Button variant="lime" onClick={onReset}>
+            <span className="ml-2 align-top">
+              <Button variant="lime" onClick={onReset} className="align-middle">
                 ♺
               </Button>
             </span>
           )}
         </div>
       </h1>
-      <div className="sticky top-0 z-10 flex items-center gap-2 rounded-sm bg-slate-900 px-2">
+      <div className="sticky top-11 z-10 flex items-center gap-2 rounded-sm bg-slate-900 px-2">
         {controls}
       </div>
-      <div className="sticky top-8 z-10 mb-1 h-auto w-full max-w-xs rounded-sm py-1 pl-8 pr-6 text-blue-100">
+      <div className="sticky top-20 z-10 mb-1 h-auto w-full max-w-xs rounded-sm py-1 pl-8 pr-6 text-blue-100">
         <div className="flex gap-[2px] text-blue-300">{headers}</div>
       </div>
       <div className="flex w-full max-w-xs flex-wrap justify-start px-4 text-blue-300">

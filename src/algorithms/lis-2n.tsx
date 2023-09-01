@@ -109,7 +109,7 @@ type RunProps<T> = {
   defaultValues?: T;
 };
 
-export default function Run({
+export default function LIS2N({
   defaultValues = { inputs: initState, max: 0 },
 }: RunProps<DefaultValues>) {
   const [max, setMax] = useState(defaultValues.max);
@@ -128,26 +128,22 @@ export default function Run({
       title="LIS O(2^n)"
       onReset={() => setInputs(initState)}
       controls={
-        <>
+        <span className="contents text-center font-mono text-lg text-blue-200">
           <Button
             variant="blue"
             onClick={() => setInputs((i) => i.slice(0, -1))}
           >
             -
           </Button>
-          <h2 className="pointer-events-none w-6 text-center font-mono text-lg text-blue-200">
-            {inputs.length}
-          </h2>
+          <h2 className="pointer-events-none w-6 ">{inputs.length}</h2>
           <Button
             variant="yellow"
             onClick={() => setInputs((i) => [...i, Math.floor(n(15))])}
           >
             +
           </Button>
-          <h2 className="pointer-events-none sticky top-0 z-10 w-20 text-center font-mono text-lg text-blue-200">
-            → {max.toFixed(2)}
-          </h2>
-        </>
+          <h2 className="pointer-events-none">→ {max.toFixed(2)}</h2>
+        </span>
       }
       headers={inputs.map((p, index) => (
         <div

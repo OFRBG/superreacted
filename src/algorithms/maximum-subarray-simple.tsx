@@ -1,4 +1,5 @@
 import {
+  Children,
   Dispatch,
   ReactNode,
   SetStateAction,
@@ -51,7 +52,7 @@ const Result = ({ i, j, a, children }: MaximumSubArrayProps) => {
       {i
         ? Array(i - 1)
             .fill(-1)
-            .map(() => <Block />)
+            .map(() => <Block empty />)
         : null}
       {children}
       {Array(inputs.length - j)
@@ -96,11 +97,14 @@ const MaximumSubArray = ({ i, j, a, children }: MaximumSubArrayProps) => {
       <Result i={i} j={j} a={a}>
         {children}
       </Result>
-      <MaximumSubArray i={next} j={next} a={item}>
+      <MaximumSubArray i={i} j={next} a={a + item}>
+        {Children.count(children) > 1 &&
+          Children.toArray(children).slice(0, -1)}
+        {Children.count(children) > 1 && <Block dim />}
+        {Children.count(children) <= 1 && children}
         <Block cached={solved.has(`${j}-${inputs.length - 1}`)} />
       </MaximumSubArray>
-      <MaximumSubArray i={i} j={next} a={a + item}>
-        {children}
+      <MaximumSubArray i={next} j={next} a={item}>
         <Block cached={solved.has(`${j}-${inputs.length - 1}`)} />
       </MaximumSubArray>
     </CacheMark>
@@ -117,7 +121,7 @@ type RunProps<T> = {
   defaultValues?: T;
 };
 
-export default function Run({
+export default function MaximumSubarray2N({
   defaultValues = { inputs: [-2, 1, -3, 4, 5, 7] },
 }: RunProps<DefaultValues>) {
   const [max, setMax] = useState(MIN);
@@ -135,26 +139,22 @@ export default function Run({
     <Layout
       title="Maximum Subarray O(2^n)"
       controls={
-        <>
+        <span className="contents text-center font-mono text-lg text-blue-200">
           <Button
             variant="blue"
             onClick={() => setInputs((i) => i.slice(0, -1))}
           >
             -
           </Button>
-          <h2 className="pointer-events-none w-6 text-center font-mono text-lg text-blue-200">
-            {inputs.length}
-          </h2>
+          <h2 className="pointer-events-none w-6 ">{inputs.length}</h2>
           <Button variant="yellow" onClick={() => setInputs((i) => [...i, 1])}>
             +
           </Button>
-          <h2 className="pointer-events-none sticky top-0 z-10 flex-1 text-center font-mono text-lg text-blue-200">
-            →
-          </h2>
-          <h2 className="pointer-events-none sticky top-0 z-10 flex-1 text-center font-mono text-lg text-blue-200">
+          <h2 className="pointer-events-none flex-1 ">→</h2>
+          <h2 className="pointer-events-none flex-1 ">
             {max === MIN ? "..." : max}
           </h2>
-        </>
+        </span>
       }
       headers={inputs.map((p, index) => (
         <div key={index} className="flex-1 text-center font-mono text-xs">

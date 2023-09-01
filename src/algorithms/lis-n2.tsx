@@ -112,7 +112,7 @@ const LIS = ({ children, i, l, a, backtrack }: LISProps) => {
 };
 
 const initState = (base: number[] = []) =>
-  Array(base.length || 4)
+  Array(base.length || 10)
     .fill(15)
     .map((m, i) => Math.floor(n(m, m + i)));
 
@@ -125,7 +125,7 @@ type RunProps<T> = {
   defaultValues?: T;
 };
 
-export default function Run({
+export default function LISN2({
   defaultValues = { inputs: initState, max: 0 },
 }: RunProps<DefaultValues>) {
   const [max, setMax] = useState(defaultValues.max);
@@ -144,26 +144,22 @@ export default function Run({
       title="LIS O(n^2)"
       onReset={() => setInputs(initState)}
       controls={
-        <>
+        <span className="contents text-center font-mono text-lg text-blue-200">
           <Button
             variant="blue"
             onClick={() => setInputs((i) => i.slice(0, -1))}
           >
             -
           </Button>
-          <h2 className="pointer-events-none w-6 text-center font-mono text-lg text-blue-200">
-            {inputs.length}
-          </h2>
+          <h2 className="pointer-events-none w-6">{inputs.length}</h2>
           <Button
             variant="yellow"
             onClick={() => setInputs((i) => [...i, Math.floor(n(15))])}
           >
             +
           </Button>
-          <h2 className="pointer-events-none sticky top-0 z-10 w-12 text-center font-mono text-lg text-blue-200">
-            → {max}
-          </h2>
-        </>
+          <h2 className="pointer-events-none">→ {max}</h2>
+        </span>
       }
       headers={inputs.map((p, index) => (
         <div

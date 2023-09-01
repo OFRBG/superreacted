@@ -99,7 +99,7 @@ type RunProps<T> = {
   defaultValues?: T;
 };
 
-export default function Run({
+export default function CopperRods({
   defaultValues = { w: 6, inputs: initState },
 }: RunProps<DefaultValues>) {
   const [max, setMax] = useState(0);
@@ -119,23 +119,21 @@ export default function Run({
       title="Copper Rods"
       onReset={() => setInputs(initState)}
       controls={
-        <>
+        <span className="contents text-center font-mono text-lg text-blue-200">
           <Button variant="blue" onClick={() => setW((w) => w - 1)}>
             -
           </Button>
-          <h2 className="pointer-events-none w-6 text-center font-mono text-lg text-blue-200">
-            {w}
-          </h2>
+          <h2 className="pointer-events-none w-6 ">{w}</h2>
           <Button variant="yellow" onClick={() => setW((w) => w + 1)}>
             +
           </Button>
-          <h2 className="pointer-events-none sticky top-0 z-10 w-20 text-center font-mono text-lg text-blue-200">
+          <h2 className="pointer-events-none ">
             →{" "}
             <span data-testid="result" className="contents">
               {max.toFixed(2)}
             </span>
           </h2>
-        </>
+        </span>
       }
       headers={
         <div className="flex max-w-xs flex-wrap text-blue-300">
