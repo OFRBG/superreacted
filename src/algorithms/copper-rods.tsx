@@ -140,22 +140,7 @@ export default function Run({
       headers={
         <div className="flex max-w-xs flex-wrap text-blue-300">
           {inputs.map((p, index) => (
-            <div
-              key={index}
-              className={`group flex h-4 w-full items-center font-mono text-xs ${
-                index + 1 > w ? "hidden" : ""
-              }`}
-            >
-              <span className="mr-2">{Number(p).toFixed(2)}</span>
-              <div
-                style={{
-                  width: ((index + 1) / (w + 1)) * 100 + "%",
-                }}
-                className={`h-1`}
-              >
-                <Block />
-              </div>
-            </div>
+            <InputValue index={index} w={w} p={p} />
           ))}
         </div>
       }
@@ -164,5 +149,26 @@ export default function Run({
         <MaxProfit a={0} w={w} />
       </RunContext.Provider>
     </Layout>
+  );
+}
+
+function InputValue({ index, w, p }: { index: number; w: number; p: number }) {
+  return (
+    <div
+      key={index}
+      className={`group flex h-4 w-full items-center font-mono text-xs ${
+        index + 1 > w ? "hidden" : ""
+      }`}
+    >
+      <span className="mr-2">{Number(p).toFixed(2)}</span>
+      <div
+        style={{
+          width: ((index + 1) / (w + 1)) * 100 + "%",
+        }}
+        className={`h-1`}
+      >
+        <Block />
+      </div>
+    </div>
   );
 }

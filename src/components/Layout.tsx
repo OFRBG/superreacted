@@ -1,19 +1,21 @@
 import { ReactNode } from "react";
 import { Button } from "./Button";
 
+type Props = {
+  title: string;
+  controls: ReactNode;
+  headers: ReactNode;
+  children: ReactNode;
+  onReset?: () => void;
+};
+
 export const Layout = ({
   title,
   onReset,
   controls,
   headers,
   children,
-}: {
-  title: string;
-  controls: ReactNode;
-  headers: ReactNode;
-  children: ReactNode;
-  onReset?: () => void;
-}) => {
+}: Props) => {
   return (
     <div className="flex h-screen select-none flex-col items-center justify-start gap-1 overflow-scroll p-4">
       <h1 className="pb-2 font-mono text-xl text-blue-100">
