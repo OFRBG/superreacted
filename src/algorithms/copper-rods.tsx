@@ -46,7 +46,7 @@ const Result = ({ a, children }: Omit<MaxProfitProps, "w">) => {
   });
 
   return (
-    <BlockLine highlight={a === max} note={Number(a).toFixed()}>
+    <BlockLine highlight={a === max} note={Number(a).toFixed(2)}>
       {children}
     </BlockLine>
   );
@@ -60,6 +60,7 @@ const CacheMark = ({ w, children }: { w: number; children: ReactNode }) => {
 
 const MaxProfit = ({ a, w, children }: MaxProfitProps) => {
   const { inputs } = useRunContext();
+
   if (w === 0)
     return (
       <Result key={`${w}-${a.toFixed(2)}`} a={a}>
@@ -100,7 +101,7 @@ type RunProps<T> = {
 };
 
 export default function CopperRods({
-  defaultValues = { w: 6, inputs: initState },
+  defaultValues = { w: 7, inputs: initState },
 }: RunProps<DefaultValues>) {
   const [max, setMax] = useState(0);
   const [w, setW] = useState(defaultValues.w);
@@ -154,7 +155,7 @@ function InputValue({ index, w, p }: { index: number; w: number; p: number }) {
   return (
     <div
       key={index}
-      className={`group flex h-4 w-full items-center font-mono text-xs ${
+      className={`group flex h-3 w-full items-center  bg-slate-900 p-1 font-mono text-xs ${
         index + 1 > w ? "hidden" : ""
       }`}
     >

@@ -132,9 +132,9 @@ const MaximumSubArray = ({
 };
 
 const initState = (base: number[] = []) =>
-  Array(base.length || 14)
+  Array(base.length || 20)
     .fill(-1)
-    .map(() => Math.floor(n(6, 6)));
+    .map(() => Math.floor(n(10, 30)));
 
 const MIN = -1000;
 
@@ -147,7 +147,7 @@ type RunProps<T> = {
 };
 
 export default function MaximumSubarrayN({
-  defaultValues = { inputs: [-2, 1, -3, 4, 5, 7] },
+  defaultValues = { inputs: initState },
 }: RunProps<DefaultValues>) {
   const [max, setMax] = useState(MIN);
   const [inputs, setInputs] = useState(defaultValues.inputs);
@@ -182,23 +182,14 @@ export default function MaximumSubarrayN({
         </span>
       }
       headers={inputs.map((p, index) => (
-        <div key={index} className="flex-1 text-center font-mono text-xs">
-          <input
-            className={`w-full rounded-sm bg-transparent text-center ${
-              p < 0 ? "text-red-500" : ""
-            }`}
-            step="1"
-            type="number"
-            value={p}
-            onChange={(event) => {
-              setInputs(
-                (i) => (
-                  i.splice(index, 1, Number(event.target.value)), i.slice()
-                ),
-              );
-            }}
-          />
-          <SystemBlock />
+        <div
+          key={index}
+          className={`w-[2ch] flex-1 rounded-sm bg-slate-900 text-center font-mono text-xs ${
+            p < 0 ? "text-rose-600" : ""
+          }`}
+        >
+          {Math.abs(p)}
+          <Block />
         </div>
       ))}
     >

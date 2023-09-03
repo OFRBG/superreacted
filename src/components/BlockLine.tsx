@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 type Props = {
   highlight?: boolean;
   children: ReactNode;
-  note: ReactNode;
+  note?: ReactNode;
 };
 
 export const BlockLine = ({ children, highlight, note }: Props) => {
@@ -19,9 +19,11 @@ export const BlockLine = ({ children, highlight, note }: Props) => {
       <div className="flex h-1 flex-1 items-center justify-center gap-[2px]">
         {children}
       </div>
-      <div className="invisible w-0 font-mono text-xs group-hover:visible">
-        {note}
-      </div>
+      {note != null ? (
+        <div className="invisible w-0 whitespace-nowrap font-mono text-xs group-hover:visible">
+          {note}
+        </div>
+      ) : null}
     </div>
   );
 };

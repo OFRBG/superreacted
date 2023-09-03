@@ -142,7 +142,7 @@ export default function LIS2N({
           >
             +
           </Button>
-          <h2 className="pointer-events-none">→ {max.toFixed(2)}</h2>
+          <h2 className="pointer-events-none">→ {max}</h2>
         </span>
       }
       headers={inputs.map((p, index) => (
