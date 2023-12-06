@@ -1,4 +1,4 @@
-import React, {
+import {
   Dispatch,
   ReactNode,
   SetStateAction,
@@ -15,8 +15,8 @@ import { Layout } from "../components/Layout";
 import { BlockLine } from "../components/BlockLine";
 
 const RunContext = createContext<{
-  setMax: Dispatch<SetStateAction<Map<string, number>>>;
-  max: Map<string, number>;
+  setMax: Dispatch<SetStateAction<number>>;
+  max: number;
   inputs: number[];
 } | null>(null);
 
@@ -35,28 +35,28 @@ const solved = new Set();
 type LISProps = {
   children?: ReactNode;
   i: number;
+  j: number;
   l: number[];
   a: number;
-  backtrack?: boolean;
 };
 
-const Result = ({ a, i, j, children }: Omit<LISProps, "l"> & { j: number }) => {
+const Result = ({ a, i: index }: Omit<LISProps, "l"> & { j: number }) => {
   const { setMax, max, inputs } = useRunContext();
 
   useEffect(() => {
-    setMax((m) => {
-      m.set(`${i}`, Math.max(a, m.get(`${i}`) || 0));
-      return new Map(m);
-    });
-  }, [a, i, j, setMax]);
+    setMax((m) => Math.max(m, a));
+  });
 
   return (
-    <BlockLine highlight={a === max.get(`${inputs.length}`)} note={a}>
-      {children}
-      {i
-        ? Array(inputs.length - i)
-            .fill(true)
-            .map(() => <Block empty />)
+    <BlockLine highlight={a === max} note={a}>
+      {index != null
+        ? inputs.slice(0, index).map((_, i) => <Block key={i} empty />)
+        : null}
+      <Block />
+      {index != null
+        ? inputs
+          .slice(index + 1, inputs.length)
+          .map((_, index) => <Block key={index} empty />)
         : null}
     </BlockLine>
   );
@@ -71,15 +71,13 @@ const CacheMark = ({
   j: number;
   children: ReactNode;
 }) => {
-  solved.add(`${j}-${i}`);
+  solved.add(`${i}-${j}`);
 
   return <>{children}</>;
 };
 
-const LIS = ({ children, i, l, a, backtrack }: LISProps) => {
+const LIS = ({ children, i, j, l, a }: LISProps) => {
   const { inputs } = useRunContext();
-
-  const j = l[l.length - 1];
 
   if (i === inputs.length) {
     return (
@@ -90,35 +88,24 @@ const LIS = ({ children, i, l, a, backtrack }: LISProps) => {
   }
 
   return (
-    <>
-      {!backtrack && (
-        <Result a={a} i={i} j={j}>
-          {children}
-        </Result>
-      )}
-      {inputs[i] >= inputs[j] || l.length === 0 ? (
-        <CacheMark i={i} j={j}>
-          <LIS i={i + 1} l={[...l, i]} a={a + 1}>
+    <CacheMark i={i} j={j}>
+      <Result a={a} i={i} j={j}>
+        {children}
+      </Result>
+      <LIS
+        a={j === i ? 1 : inputs[i] > inputs[j] ? Math.max(l[j] + 1, a) : a}
+        i={j < i ? i : i + 1}
+        j={j < i ? j + 1 : 0}
+        l={j === i ? [...l, a] : l}
+      >
+        {i !== j ? (
+          <>
             {children}
-            <Block cached={solved.has(`${j}-${i}`)} />
-          </LIS>
-        </CacheMark>
-      ) : (
-        <>
-          {!backtrack && (
-            <LIS i={i + 1} l={l} a={a}>
-              {children}
-              <Block dim cached={solved.has(`${j}-${i}`)} />
-            </LIS>
-          )}
-          <LIS i={i} l={l.slice(0, -1)} backtrack a={a - 1}>
-            {React.Children.toArray(children)?.slice(0, j)}
-            <Block dim removed />
-            {React.Children.toArray(children)?.slice(j + 1, i)}
-          </LIS>
-        </>
-      )}
-    </>
+            <Block key={`${j}-${i}`} />
+          </>
+        ) : null}
+      </LIS>
+    </CacheMark>
   );
 };
 
@@ -128,7 +115,7 @@ const initState = (base: number[] = []) =>
     .map((m, i) => Math.floor(n(m, m + i)));
 
 type DefaultValues = {
-  max: Map<string, number>;
+  max: number;
   inputs: number[] | (() => number[]);
 };
 
@@ -137,7 +124,7 @@ type RunProps<T> = {
 };
 
 export default function LISN2({
-  defaultValues = { inputs: initState, max: new Map() },
+  defaultValues = { inputs: initState, max: 0 },
 }: RunProps<DefaultValues>) {
   const [max, setMax] = useState(defaultValues.max);
   const [inputs, setInputs] = useState(defaultValues.inputs);
@@ -147,7 +134,7 @@ export default function LISN2({
   });
 
   useLayoutEffect(() => {
-    setMax(new Map());
+    setMax(0);
   }, [inputs]);
 
   return (
@@ -169,17 +156,14 @@ export default function LISN2({
           >
             +
           </Button>
-          <h2 className="pointer-events-none">
-            → {max.get(`${inputs.length}`)}
-          </h2>
+          <h2 className="pointer-events-none">→ {max}</h2>
         </span>
       }
       headers={inputs.map((p, index) => (
         <div
           key={index}
-          className={`w-[2ch] flex-1 rounded-sm bg-slate-900 text-center font-mono text-xs ${
-            p < 0 ? "text-rose-600" : ""
-          }`}
+          className={`w-[2ch] flex-1 rounded-sm bg-slate-900 text-center font-mono text-xs ${p < 0 ? "text-rose-600" : ""
+            }`}
         >
           {Math.abs(p)}
           <Block />
@@ -187,7 +171,7 @@ export default function LISN2({
       ))}
     >
       <RunContext.Provider value={{ setMax, max, inputs }}>
-        <LIS a={0} i={0} l={[]} />
+        <LIS a={1} i={0} j={0} l={[]} />
       </RunContext.Provider>
     </Layout>
   );
