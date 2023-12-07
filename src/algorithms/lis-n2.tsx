@@ -55,8 +55,8 @@ const Result = ({ a, i: index }: Omit<LISProps, "l"> & { j: number }) => {
       <Block />
       {index != null
         ? inputs
-          .slice(index + 1, inputs.length)
-          .map((_, index) => <Block key={index} empty />)
+            .slice(index + 1, inputs.length)
+            .map((_, index) => <Block key={index} empty />)
         : null}
     </BlockLine>
   );
@@ -162,8 +162,9 @@ export default function LISN2({
       headers={inputs.map((p, index) => (
         <div
           key={index}
-          className={`w-[2ch] flex-1 rounded-sm bg-slate-900 text-center font-mono text-xs ${p < 0 ? "text-rose-600" : ""
-            }`}
+          className={`w-[2ch] flex-1 rounded-sm bg-slate-900 text-center font-mono text-xs ${
+            p < 0 ? "text-rose-600" : ""
+          }`}
         >
           {Math.abs(p)}
           <Block />

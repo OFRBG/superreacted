@@ -15,7 +15,7 @@ type LinkProps = {
 };
 
 const LinkItem = ({ href, name }: LinkProps) => (
-  <li className="text-xs hover:ml-2 hover:text-blue-400">
+  <li className="text-xs transition-all duration-100 hover:translate-x-1 hover:text-blue-400">
     <a href={href}>{name}</a>
   </li>
 );
@@ -33,7 +33,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <div className="flex h-screen w-screen max-sm:flex-col">
       <div className="bg-slate-800 p-8 font-mono text-blue-300">
-        <h1 className="mb-4 text-2xl font-bold text-blue-200">No Business</h1>
+        <h1 className="mb-4 text-2xl font-bold text-blue-200">Superreacted</h1>
         <ul className="space-y-1">
           {entries.map((props) => (
             <LinkItem key={props.href} {...props} />
