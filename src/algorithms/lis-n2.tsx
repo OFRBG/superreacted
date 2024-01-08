@@ -55,8 +55,8 @@ const Result = ({ a, i: index }: Omit<LISProps, "l"> & { j: number }) => {
       <Block />
       {index != null
         ? inputs
-            .slice(index + 1, inputs.length)
-            .map((_, index) => <Block key={index} empty />)
+          .slice(index + 1, inputs.length)
+          .map((_, index) => <Block key={index} empty />)
         : null}
     </BlockLine>
   );
@@ -123,6 +123,10 @@ type RunProps<T> = {
   defaultValues?: T;
 };
 
+const content = `
+## Longest Increasing Subsequence O(n²)
+`
+
 export default function LISN2({
   defaultValues = { inputs: initState, max: 0 },
 }: RunProps<DefaultValues>) {
@@ -137,9 +141,11 @@ export default function LISN2({
     setMax(0);
   }, [inputs]);
 
+
   return (
     <Layout
       title="LIS O(n^2)"
+      content={content}
       onReset={() => setInputs(initState)}
       controls={
         <span className="contents text-center font-mono text-lg text-blue-200">
@@ -162,9 +168,8 @@ export default function LISN2({
       headers={inputs.map((p, index) => (
         <div
           key={index}
-          className={`w-[2ch] flex-1 rounded-sm bg-slate-900 text-center font-mono text-xs ${
-            p < 0 ? "text-rose-600" : ""
-          }`}
+          className={`w-[2ch] flex-1 rounded-sm bg-slate-900 text-center font-mono text-xs ${p < 0 ? "text-rose-600" : ""
+            }`}
         >
           {Math.abs(p)}
           <Block />
